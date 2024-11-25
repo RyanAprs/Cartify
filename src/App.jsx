@@ -1,7 +1,9 @@
+import AppRoute from "./routes/AppRoute";
+
 function App() {
   return (
-    <div className="min-h-screen max-h-fit bg-blue-400 flex justify-center items-center">
-      Hello World
+    <div className="md:px-16 px-4 py-2">
+      <AppRoute />
     </div>
   );
 }
