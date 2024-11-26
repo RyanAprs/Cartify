@@ -5,6 +5,8 @@ import {
   fetchProducts,
   fetchProductsByCategory,
 } from "../store/actions/ProductActions";
+import { Link } from "react-router-dom";
+import StarRating from "../components/StartRating";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -27,14 +29,14 @@ const ProductList = () => {
 
   if (loading) {
     return (
-      <div className="bg-main-color h-screen w-full flex justify-center items-center">
+      <div className="bg-second-color h-screen w-full flex justify-center items-center">
         <h1 className="text-4xl text-third-color">Loading...</h1>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col w-full pt-2 gap-8">
+    <div className="flex flex-col w-full pt-2 gap-8 min-h-screen max-h-fit bg-second-color">
       <HeroSection />
       <div className="md:flex md:justify-between justify-end items-center">
         <h1 className="md:text-2xl text-xl font-bold">
@@ -42,7 +44,7 @@ const ProductList = () => {
         </h1>
         <select
           onChange={handleClickCategory}
-          className="bg-second-color p-3 w-full md:w-auto"
+          className="bg-main-color p-3 w-full md:w-auto rounded-full"
         >
           <option value="all categories" defaultValue={true}>
             All Categories
@@ -54,14 +56,38 @@ const ProductList = () => {
         </select>
       </div>
 
-      <div className="product-list">
+      <div className="product-list h-full">
         {error && <p>Error: {error}</p>}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {products.map((product) => (
-            <div key={product.id} className="product-card">
-              <h2 className="text-lg font-bold">{product.title}</h2>
-              <p>${product.category}</p>
-            </div>
+            <Link
+              to={`/product/${product.id}`}
+              key={product.id}
+              className="bg-main-color p-3 rounded-xl flex flex-col justify-between h-full"
+            >
+              <div className="flex justify-center items-center mb-4">
+                <img
+                  className="h-40 w-auto"
+                  src={product.image}
+                  alt={product.title}
+                />
+              </div>
+              <div className="flex flex-col gap-2 flex-grow mb-4">
+                <h1 className="text-lg font-bold line-clamp-2">
+                  {product.title}
+                </h1>
+                <p className="text-lg">${product.price}</p>
+              </div>
+              <div className="flex flex-col w-full items-end gap-4 justify-end">
+                <div className="flex text-md w-full justify-start">
+                  <StarRating rating={product.rating.rate} />
+                  <p>{`(${product.rating.count})`}</p>
+                </div>
+                <button className="bg-third-color md:w-1/2 w-full py-2 md:py-3 font-semibold rounded-full text-main-color">
+                  Add to Cart
+                </button>
+              </div>
+            </Link>
           ))}
         </div>
       </div>

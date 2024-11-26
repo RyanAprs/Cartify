@@ -25,6 +25,7 @@ export const fetchProducts = () => async (dispatch) => {
   try {
     const response = await axios.get(`${BASE_URI}/products`);
     dispatch(fetchProductsSuccess(response.data));
+    console.log(response.data);
   } catch (error) {
     dispatch(fetchProductsFailure(error.message));
   }
