@@ -1,30 +1,30 @@
 import {
-  FETCH_PRODUCTS_FAILURE,
-  FETCH_PRODUCTS_REQUEST,
-  FETCH_PRODUCTS_SUCCESS,
-} from "../actions/ProductActions";
+  USER_LOGIN_ERROR,
+  USER_LOGIN_REQUEST,
+  USER_LOGIN_SUCCESS,
+} from "../actions/UserActions";
 
-const ProductState = {
-  products: [],
+const UserState = {
+  token: null,
   loading: false,
   error: null,
 };
 
-export const ProductReducer = (state = ProductState, action) => {
+export const UserReducer = (state = UserState, action) => {
   switch (action.type) {
-    case FETCH_PRODUCTS_REQUEST:
+    case USER_LOGIN_REQUEST:
       return {
         ...state,
         loading: true,
         error: null,
       };
-    case FETCH_PRODUCTS_SUCCESS:
+    case USER_LOGIN_SUCCESS:
       return {
         ...state,
         loading: false,
-        products: action.payload,
+        token: action.payload.token,
       };
-    case FETCH_PRODUCTS_FAILURE:
+    case USER_LOGIN_ERROR:
       return {
         ...state,
         loading: false,

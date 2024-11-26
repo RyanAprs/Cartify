@@ -1,4 +1,29 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../store/actions/UserActions";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const { token, loading, error } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    const tokenFromCookie = Cookies.get("token");
+    if (tokenFromCookie || token) {
+      navigate("/");
+    }
+  }, [token, navigate]);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    dispatch(loginUser(username, password));
+  };
+
   return (
     <div className="min-h-screen max-h-fit flex flex-col justify-center gap-10 2xl:gap-16">
       <div className="flex justify-center">
@@ -8,17 +33,25 @@ const Login = () => {
       </div>
       <div className="flex flex-col justify-center items-center w-full gap-5 2xl:gap-9">
         <input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           className="bg-gray-200 p-4 2xl:p-6 text-xl rounded-xl md:w-1/2 w-full"
           type="text"
           placeholder="Username"
         />
         <input
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           className="bg-gray-200 p-4 2xl:p-6 text-xl rounded-xl md:w-1/2 w-full"
           type="password"
           placeholder="Password"
         />
-        <button className="2xl:w-1/4 md:w-1/2 w-full flex justify-center items-center bg-third-color p-4 text-second-color rounded-xl">
-          Login
+        {error && !token && <p className="text-red-500">{error}</p>}
+        <button
+          onClick={handleLogin}
+          className="2xl:w-1/4 md:w-1/2 w-full flex justify-center items-center bg-third-color p-4 text-second-color rounded-xl"
+        >
+          {loading ? "Loading.." : "Login"}
         </button>
       </div>
     </div>

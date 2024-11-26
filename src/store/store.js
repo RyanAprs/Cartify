@@ -3,11 +3,13 @@ import {
   combineReducers,
   createStore,
 } from "@reduxjs/toolkit";
-import { productReducer } from "./reducers/ProductReducer";
 import { thunk } from "redux-thunk";
+import { ProductReducer } from "./reducers/ProductReducer";
+import { UserReducer } from "./reducers/UserReducer";
 
 const reducer = combineReducers({
-  products: productReducer,
+  products: ProductReducer,
+  user: UserReducer,
 });
 
 const store = createStore(reducer, applyMiddleware(thunk));
