@@ -5,11 +5,12 @@ import {
   fetchProducts,
   fetchProductsByCategory,
 } from "../store/actions/ProductActions";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import StarRating from "../components/StartRating";
 
 const ProductList = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { products, loading, error } = useSelector((state) => state.products);
 
@@ -27,7 +28,9 @@ const ProductList = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  const handleAddToCart = () => {};
+  const handleAddToCart = () => {
+    navigate("/cart");
+  };
 
   if (loading) {
     return (
@@ -59,40 +62,48 @@ const ProductList = () => {
       </div>
 
       <div className="product-list h-full">
-        {error && <p>Error: {error}</p>}
+        {error && (
+          <p className="text-red-500 text-center font-semibold">
+            Error: {error}
+          </p>
+        )}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {products.map((product) => (
-            <Link
-              to={`/product/${product.id}`}
+            <div
               key={product.id}
-              className="bg-main-color p-3 rounded-xl flex flex-col justify-between h-full"
+              className="flex flex-col justify-between h-full bg-main-color p-3 rounded-xl"
             >
-              <div className="flex justify-center items-center mb-4">
-                <img
-                  className="h-40 w-auto"
-                  src={product.image}
-                  alt={product.title}
-                />
-              </div>
-              <div className="flex flex-col gap-2 flex-grow mb-4">
-                <h1 className="text-lg font-bold line-clamp-2">
-                  {product.title}
-                </h1>
-                <p className="text-lg">${product.price}</p>
-              </div>
-              <div className="flex flex-col w-full items-end gap-4 justify-end">
-                <div className="flex text-md w-full justify-start">
-                  <StarRating rating={product.rating.rate} />
-                  <p>{`(${product.rating.count})`}</p>
+              <Link
+                to={`/product/${product.id}`}
+                className="flex flex-col justify-between h-full"
+              >
+                <div className="flex justify-center items-center mb-4">
+                  <img
+                    className="h-40 w-auto object-contain"
+                    src={product.image}
+                    alt={product.title}
+                  />
                 </div>
-                <button
-                  onClick={handleAddToCart}
-                  className="bg-third-color md:w-1/2 w-full py-2 font-semibold rounded-full text-main-color"
-                >
-                  Add to Cart
-                </button>
-              </div>
-            </Link>
+                <div className="flex flex-col gap-2 flex-grow mb-4">
+                  <h1 className="text-lg font-bold line-clamp-2">
+                    {product.title}
+                  </h1>
+                  <p className="text-lg font-semibold">${product.price}</p>
+                </div>
+                <div className="flex flex-col w-full items-end gap-2">
+                  <div className="flex text-md w-full justify-start items-center gap-1">
+                    <StarRating rating={product.rating.rate} />
+                    <p>{`(${product.rating.count})`}</p>
+                  </div>
+                </div>
+              </Link>
+              <button
+                onClick={() => handleAddToCart(product)}
+                className="bg-third-color w-full py-2 font-semibold rounded-full text-main-color mt-4 md:w-1/2 2xl:w-1/4"
+              >
+                Add to Cart
+              </button>
+            </div>
           ))}
         </div>
       </div>
