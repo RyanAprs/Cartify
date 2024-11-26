@@ -4,7 +4,10 @@ const BASE_URI = import.meta.env.VITE_BASE_URI;
 
 export const FETCH_PRODUCTS_REQUEST = "FETCH_PRODUCTS_REQUEST";
 export const FETCH_PRODUCTS_SUCCESS = "FETCH_PRODUCTS_SUCCESS";
-export const FETCH_PRODUCTS_FAILURE = "FETCH_PRODUCTS_FAILURE";
+export const FETCH_PRODUCTS_ERROR = "FETCH_PRODUCTS_ERROR";
+export const FETCH_PRODUCT_BY_ID_REQUEST = "FETCH_PRODUCT_BY_ID_REQUEST";
+export const FETCH_PRODUCT_BY_ID_SUCCESS = "FETCH_PRODUCT_BY_ID_SUCCESS";
+export const FETCH_PRODUCT_BY_ID_ERROR = "FETCH_PRODUCT_BY_ID_ERROR";
 
 export const fetchProductsRequest = () => ({
   type: FETCH_PRODUCTS_REQUEST,
@@ -15,8 +18,22 @@ export const fetchProductsSuccess = (products) => ({
   payload: products,
 });
 
-export const fetchProductsFailure = (error) => ({
-  type: FETCH_PRODUCTS_FAILURE,
+export const fetchProductsError = (error) => ({
+  type: FETCH_PRODUCTS_ERROR,
+  payload: error,
+});
+
+export const fetchProductByIdRequest = () => ({
+  type: FETCH_PRODUCT_BY_ID_REQUEST,
+});
+
+export const fetchProductByIdSuccess = (product) => ({
+  type: FETCH_PRODUCT_BY_ID_SUCCESS,
+  payload: product,
+});
+
+export const fetchProductByIdError = (error) => ({
+  type: FETCH_PRODUCT_BY_ID_ERROR,
   payload: error,
 });
 
@@ -26,7 +43,7 @@ export const fetchProducts = () => async (dispatch) => {
     const response = await axios.get(`${BASE_URI}/products`);
     dispatch(fetchProductsSuccess(response.data));
   } catch (error) {
-    dispatch(fetchProductsFailure(error.message));
+    dispatch(fetchProductsError(error.message));
   }
 };
 
@@ -38,6 +55,16 @@ export const fetchProductsByCategory = (category) => async (dispatch) => {
     );
     dispatch(fetchProductsSuccess(response.data));
   } catch (error) {
-    dispatch(fetchProductsFailure(error.message));
+    dispatch(fetchProductsError(error.message));
+  }
+};
+
+export const fetchProductById = (id) => async (dispatch) => {
+  dispatch(fetchProductByIdRequest());
+  try {
+    const response = await axios.get(`${BASE_URI}/products/${id}`);
+    dispatch(fetchProductByIdSuccess(response.data));
+  } catch (error) {
+    dispatch(fetchProductByIdError(error.message));
   }
 };

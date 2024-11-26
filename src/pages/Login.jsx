@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../store/actions/UserActions";
+import { checkToken, loginUser } from "../store/actions/UserActions";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -10,14 +9,14 @@ const Login = () => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
-  const { token, loading, error } = useSelector((state) => state.user);
+  const { loading, error } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const tokenFromCookie = Cookies.get("token");
-    if (tokenFromCookie || token) {
+    const token = checkToken();
+    if (token) {
       navigate("/");
     }
-  }, [token, navigate]);
+  }, [navigate]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -46,7 +45,7 @@ const Login = () => {
           type="password"
           placeholder="Password"
         />
-        {error && !token && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500">{error}</p>}
         <button
           onClick={handleLogin}
           className="2xl:w-1/4 md:w-1/2 w-full flex justify-center items-center bg-third-color p-4 text-second-color rounded-xl"

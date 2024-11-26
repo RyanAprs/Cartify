@@ -7,12 +7,14 @@ import {
 } from "../store/actions/ProductActions";
 import { Link, useNavigate } from "react-router-dom";
 import StarRating from "../components/StartRating";
+import { checkToken } from "../store/actions/UserActions";
 
 const ProductList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { products, loading, error } = useSelector((state) => state.products);
+  const token = checkToken();
 
   const handleClickCategory = (e) => {
     const selectedCategory = e.target.value;
@@ -29,7 +31,7 @@ const ProductList = () => {
   }, [dispatch]);
 
   const handleAddToCart = () => {
-    navigate("/cart");
+    token ? navigate("/cart") : navigate("/login");
   };
 
   if (loading) {

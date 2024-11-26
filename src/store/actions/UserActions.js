@@ -1,5 +1,4 @@
 import axios from "axios";
-import Cookies from "js-cookie";
 
 const BASE_URI = import.meta.env.VITE_BASE_URI;
 
@@ -32,7 +31,7 @@ export const loginUser = (username, password) => async (dispatch) => {
 
     if (response.status === 200) {
       const { token } = response.data;
-      Cookies.set("token", token, { expires: 7, secure: true });
+      localStorage.setItem("token", token);
       dispatch(userLoginSuccess({ token }));
     }
   } catch (error) {
@@ -42,4 +41,9 @@ export const loginUser = (username, password) => async (dispatch) => {
       )
     );
   }
+};
+
+export const checkToken = () => {
+  const tokenFromStorage = localStorage.getItem("token");
+  return tokenFromStorage;
 };
