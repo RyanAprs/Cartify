@@ -14,11 +14,10 @@ const Navbar = () => {
         <img src={logo} alt="cartify logo" className="h-16" />
         <h1 className="font-semibold text-3xl">Cartify</h1>
       </div>
-
       <div className="hidden md:flex justify-center items-center gap-6">
         <Link className="flex justify-center items-center gap-1">
           <User />
-          Account
+          Profile
         </Link>
         <Link className="flex justify-center items-center gap-1">
           <ShoppingCart />
@@ -46,7 +45,7 @@ const Navbar = () => {
             onClick={toggleMenu}
           >
             <User />
-            Account
+            Profile
           </Link>
           <Link
             className="flex justify-center items-center gap-1"

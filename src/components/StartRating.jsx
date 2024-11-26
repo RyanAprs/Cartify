@@ -5,14 +5,14 @@ const StarRating = ({ rating }) => {
     const starValue = index + 1;
 
     if (rating >= starValue) {
-      return "text-yellow-400";
+      return "text-yellow-600";
     } else {
       return "text-gray-300";
     }
   });
 
   return (
-    <div className="flex space-x-1">
+    <div className="flex items-center justify-center space-x-1">
       {stars.map((color, index) => (
         <svg
           key={index}

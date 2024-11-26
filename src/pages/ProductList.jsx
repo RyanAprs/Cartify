@@ -27,6 +27,8 @@ const ProductList = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  const handleAddToCart = () => {};
+
   if (loading) {
     return (
       <div className="bg-second-color h-screen w-full flex justify-center items-center">
@@ -83,7 +85,10 @@ const ProductList = () => {
                   <StarRating rating={product.rating.rate} />
                   <p>{`(${product.rating.count})`}</p>
                 </div>
-                <button className="bg-third-color md:w-1/2 w-full py-2 md:py-3 font-semibold rounded-full text-main-color">
+                <button
+                  onClick={handleAddToCart}
+                  className="bg-third-color md:w-1/2 w-full py-2 font-semibold rounded-full text-main-color"
+                >
                   Add to Cart
                 </button>
               </div>
