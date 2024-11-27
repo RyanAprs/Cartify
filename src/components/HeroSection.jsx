@@ -2,7 +2,7 @@ import heroimg from "../assets/heroimg.png";
 
 const HeroSection = () => {
   return (
-    <div className="bg-fourth-color w-full  2xl:h-1/4  min-h-56 max-h-fit flex md:flex-row flex-col gap-0 md:gap-32 2xl:gap-56 justify-center items-center">
+    <div className="bg-fourth-color w-full  2xl:h-1/4  min-h-56 max-h-fit flex md:flex-row flex-col gap-0 md:gap-32 2xl:gap-56 justify-center items-center rounded-xl">
       <div className="flex flex-col justify-center items-start gap-6">
         <h1 className="text-3xl font-semibold md:text-5xl 2xl:text-7xl text-third-color flex flex-col gap-2">
           <span>Grab Upto 50% Off On </span>

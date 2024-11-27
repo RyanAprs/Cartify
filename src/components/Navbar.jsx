@@ -9,7 +9,7 @@ const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <div className="w-full h-16 flex items-center justify-between px-4">
+    <div className="w-full h-16 flex fixed top-0 right-0 left-0 bg-main-color items-center justify-between px-4">
       <div className="flex items-center justify-start">
         <img src={logo} alt="cartify logo" className="h-16" />
         <h1 className="font-semibold text-3xl">Cartify</h1>

@@ -43,7 +43,7 @@ const ProductList = () => {
   }
 
   return (
-    <div className="flex flex-col w-full pt-2 gap-8 min-h-screen max-h-fit bg-second-color">
+    <div className="flex flex-col w-full pt-20 gap-8 min-h-screen max-h-fit bg-second-color">
       <HeroSection />
       <div className="md:flex md:justify-between justify-end items-center">
         <h1 className="md:text-2xl text-xl font-bold">
@@ -53,9 +53,7 @@ const ProductList = () => {
           onChange={handleClickCategory}
           className="bg-main-color p-3 w-full md:w-auto rounded-full"
         >
-          <option value="all categories" defaultValue={true}>
-            All Categories
-          </option>
+          <option value="all categories">All Categories</option>
           <option value="electronics">Electronics</option>
           <option value="jewelery">Jewelery</option>
           <option value="men's clothing">Men's Clothing</option>

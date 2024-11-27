@@ -25,7 +25,15 @@ const AppRoute = () => {
           }
         />
         <Route path="/login" element={<Login />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route
+          path="/product/:id"
+          element={
+            <>
+              <Navbar />
+              <ProductDetail />
+            </>
+          }
+        />
         <Route path="/cart" element={<Cart />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

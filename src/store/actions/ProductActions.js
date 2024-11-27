@@ -63,7 +63,15 @@ export const fetchProductById = (id) => async (dispatch) => {
   dispatch(fetchProductByIdRequest());
   try {
     const response = await axios.get(`${BASE_URI}/products/${id}`);
-    dispatch(fetchProductByIdSuccess(response.data));
+    console.log(response.data);
+
+    const data = response.data;
+
+    if (data) {
+      dispatch(fetchProductByIdSuccess(response.data));
+    } else {
+      dispatch(fetchProductByIdError("Product not found"));
+    }
   } catch (error) {
     dispatch(fetchProductByIdError(error.message));
   }
