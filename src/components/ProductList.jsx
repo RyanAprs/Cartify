@@ -6,7 +6,8 @@ import {
 } from "../store/actions/ProductActions";
 import { Link, useNavigate } from "react-router-dom";
 import StarRating from "../components/StartRating";
-import { checkToken } from "../store/actions/UserActions";
+import { checkToken, getIdUser } from "../store/actions/UserActions";
+import { addToCart } from "../store/actions/CartActions";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -29,8 +30,39 @@ const ProductList = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  const handleAddToCart = () => {
-    token ? navigate("/cart") : navigate("/login");
+  const handleAddToCart = (productId, quantity) => {
+    if (!token) {
+      navigate("/login");
+    } else {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      const formattedDate = `${year}-${month}-${day}`;
+
+      const userId = getIdUser(token);
+
+      const products = [
+        {
+          productId,
+          quantity,
+        },
+      ];
+
+      dispatch(addToCart(userId, formattedDate, products));
+
+      // console.log({
+      //   userId,
+      //   date: formattedDate,
+      //   products: [
+      //     {
+      //       productId,
+      //       quantity,
+      //     },
+      //   ],
+      // });
+    }
   };
 
   if (loading) {
@@ -96,7 +128,7 @@ const ProductList = () => {
                 </div>
               </Link>
               <button
-                onClick={() => handleAddToCart(product)}
+                onClick={() => handleAddToCart(product.id, 1)}
                 className="bg-third-color w-full py-2 font-semibold rounded-full text-main-color mt-4 md:w-1/2 2xl:w-1/4"
               >
                 Add to Cart

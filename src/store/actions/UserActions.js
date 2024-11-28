@@ -1,4 +1,5 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const BASE_URI = import.meta.env.VITE_BASE_URI;
 
@@ -49,4 +50,11 @@ export const loginUser = (username, password) => async (dispatch) => {
 export const checkToken = () => {
   const token = localStorage.getItem("token");
   return token ? token : null;
+};
+
+export const getIdUser = (token) => {
+  const decoded = jwtDecode(token);
+  const id = decoded.sub;
+
+  return id;
 };
