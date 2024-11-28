@@ -29,10 +29,13 @@ export const loginUser = (username, password) => async (dispatch) => {
       password,
     });
 
+    console.log(response);
+
     if (response.status === 200) {
       const { token } = response.data;
       localStorage.setItem("token", token);
       dispatch(userLoginSuccess({ token }));
+      window.location.href = "/";
     }
   } catch (error) {
     dispatch(

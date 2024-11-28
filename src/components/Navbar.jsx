@@ -12,7 +12,7 @@ const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <div className="w-full h-20 flex fixed top-0 right-0 left-0 bg-second-color items-center justify-between px-4">
+    <div className="w-full h-20 flex fixed top-0 right-0 left-0 bg-second-color items-center justify-between px-4 md:px-10">
       <Link to="/" className="flex items-center justify-start">
         <img src={logo} alt="cartify logo" className="h-16" />
         <h1 className="font-semibold text-3xl">Cartify</h1>
@@ -22,8 +22,11 @@ const Navbar = () => {
         <Link to="/" className="flex justify-center items-center gap-1">
           Home
         </Link>
-        <Link to="/products" className="flex justify-center items-center gap-1">
-          Products
+        <Link to="/about" className="flex justify-center items-center gap-1">
+          About
+        </Link>
+        <Link to="/contact" className="flex justify-center items-center gap-1">
+          Contact
         </Link>
       </div>
 
@@ -83,10 +86,16 @@ const Navbar = () => {
             Home
           </Link>
           <Link
-            to="/products"
+            to="/About"
             className="flex justify-center items-center gap-1 w-full hover:bg-main-color transition-all py-3"
           >
-            Products
+            About
+          </Link>
+          <Link
+            to="/About"
+            className="flex justify-center items-center gap-1 w-full hover:bg-main-color transition-all py-3"
+          >
+            Contact
           </Link>
           {token && (
             <Link
