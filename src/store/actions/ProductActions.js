@@ -8,6 +8,7 @@ export const FETCH_PRODUCTS_ERROR = "FETCH_PRODUCTS_ERROR";
 export const FETCH_PRODUCT_BY_ID_REQUEST = "FETCH_PRODUCT_BY_ID_REQUEST";
 export const FETCH_PRODUCT_BY_ID_SUCCESS = "FETCH_PRODUCT_BY_ID_SUCCESS";
 export const FETCH_PRODUCT_BY_ID_ERROR = "FETCH_PRODUCT_BY_ID_ERROR";
+export const FETCH_PRODUCT_BY_ID_NOT_FOUND = "FETCH_PRODUCT_BY_ID_NOT_FOUND";
 
 export const fetchProductsRequest = () => ({
   type: FETCH_PRODUCTS_REQUEST,
@@ -37,6 +38,11 @@ export const fetchProductByIdError = (error) => ({
   payload: error,
 });
 
+export const fetchProductByIdNotFound = (error) => ({
+  type: FETCH_PRODUCT_BY_ID_NOT_FOUND,
+  payload: error,
+});
+
 export const fetchProducts = () => async (dispatch) => {
   dispatch(fetchProductsRequest());
   try {
@@ -63,14 +69,13 @@ export const fetchProductById = (id) => async (dispatch) => {
   dispatch(fetchProductByIdRequest());
   try {
     const response = await axios.get(`${BASE_URI}/products/${id}`);
-    console.log(response.data);
 
     const data = response.data;
 
     if (data) {
       dispatch(fetchProductByIdSuccess(response.data));
     } else {
-      dispatch(fetchProductByIdError("Product not found"));
+      dispatch(fetchProductByIdNotFound("Product not found"));
     }
   } catch (error) {
     dispatch(fetchProductByIdError(error.message));

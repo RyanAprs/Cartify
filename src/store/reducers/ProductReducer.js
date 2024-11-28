@@ -1,5 +1,6 @@
 import {
   FETCH_PRODUCT_BY_ID_ERROR,
+  FETCH_PRODUCT_BY_ID_NOT_FOUND,
   FETCH_PRODUCT_BY_ID_REQUEST,
   FETCH_PRODUCT_BY_ID_SUCCESS,
   FETCH_PRODUCTS_ERROR,
@@ -13,6 +14,7 @@ const ProductState = {
   error: null,
   singleProduct: {},
   singleProductError: null,
+  singleProductNotFound: null,
 };
 
 export const ProductReducer = (state = ProductState, action) => {
@@ -52,6 +54,12 @@ export const ProductReducer = (state = ProductState, action) => {
         ...state,
         loading: false,
         singleProductError: action.payload,
+      };
+    case FETCH_PRODUCT_BY_ID_NOT_FOUND:
+      return {
+        ...state,
+        loading: false,
+        singleProductNotFound: action.payload,
       };
     default:
       return state;
