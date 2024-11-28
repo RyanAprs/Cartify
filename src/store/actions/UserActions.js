@@ -44,6 +44,6 @@ export const loginUser = (username, password) => async (dispatch) => {
 };
 
 export const checkToken = () => {
-  const tokenFromStorage = localStorage.getItem("token");
-  return tokenFromStorage;
+  const token = localStorage.getItem("token");
+  return token ? token : null;
 };

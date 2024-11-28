@@ -1,15 +1,10 @@
-import {
-  Navigate,
-  Route,
-  BrowserRouter as Router,
-  Routes,
-} from "react-router-dom";
-import ProductList from "../pages/ProductList";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Login from "../pages/Login";
 import ProductDetail from "../pages/ProductDetail";
 import Cart from "../pages/Cart";
 import NotFound from "../pages/NotFound";
 import Navbar from "../components/Navbar";
+import Home from "../pages/home";
 
 const AppRoute = () => {
   return (
@@ -20,7 +15,7 @@ const AppRoute = () => {
           element={
             <>
               <Navbar />
-              <ProductList />
+              <Home />
             </>
           }
         />

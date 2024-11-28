@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux";
-import HeroSection from "../components/HeroSection";
 import { useEffect } from "react";
 import {
   fetchProducts,
@@ -44,7 +43,6 @@ const ProductList = () => {
 
   return (
     <div className="flex flex-col w-full pt-20 gap-8 min-h-screen max-h-fit bg-second-color">
-      <HeroSection />
       <div className="md:flex md:justify-between justify-end items-center">
         <h1 className="md:text-2xl text-xl font-bold">
           Exclusive Collections Just for You!
