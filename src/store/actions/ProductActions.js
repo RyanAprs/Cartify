@@ -25,7 +25,31 @@ export const fetchProducts = () => async (dispatch) => {
   dispatch(fetchProductsRequest());
   try {
     const response = await axios.get(`${BASE_URI}/products`);
-    dispatch(fetchProductsSuccess(response.data));
+    const productWithDefaultQuantity = response.data.map((product) => ({
+      ...product,
+      quantity: 20,
+    }));
+    dispatch(fetchProductsSuccess(productWithDefaultQuantity));
+    console.log(productWithDefaultQuantity);
+  } catch (error) {
+    dispatch(fetchProductsError(error.message));
+  }
+};
+
+// GET PRODUCT BY CATEGORY
+export const fetchProductsByCategory = (category) => async (dispatch) => {
+  dispatch(fetchProductsRequest());
+  try {
+    const response = await axios.get(
+      `${BASE_URI}/products/category/${category}`
+    );
+
+    const productWithDefaultQuantity = response.data.map((product) => ({
+      ...product,
+      quantity: 20,
+    }));
+
+    dispatch(fetchProductsSuccess(productWithDefaultQuantity));
   } catch (error) {
     dispatch(fetchProductsError(error.message));
   }
@@ -56,27 +80,19 @@ export const fetchProductByIdNotFound = (error) => ({
   payload: error,
 });
 
-export const fetchProductsByCategory = (category) => async (dispatch) => {
-  dispatch(fetchProductsRequest());
-  try {
-    const response = await axios.get(
-      `${BASE_URI}/products/category/${category}`
-    );
-    dispatch(fetchProductsSuccess(response.data));
-  } catch (error) {
-    dispatch(fetchProductsError(error.message));
-  }
-};
-
 export const fetchProductById = (id) => async (dispatch) => {
   dispatch(fetchProductByIdRequest());
   try {
     const response = await axios.get(`${BASE_URI}/products/${id}`);
 
-    const data = response.data;
+    const productWithDefaultQuantity = {
+      ...response.data,
+      quantity: 20,
+    };
 
-    if (data) {
-      dispatch(fetchProductByIdSuccess(response.data));
+    if (response.data) {
+      dispatch(fetchProductByIdSuccess(productWithDefaultQuantity));
+      console.log(productWithDefaultQuantity);
     } else {
       dispatch(fetchProductByIdNotFound("Product not found"));
     }

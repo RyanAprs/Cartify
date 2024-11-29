@@ -8,6 +8,14 @@ const Cart = () => {
     console.log(carts);
   }, [carts]);
 
+  if (loading) {
+    return (
+      <div className="bg-second-color h-screen w-full flex justify-center items-center">
+        <h1 className="text-4xl text-third-color">Loading...</h1>
+      </div>
+    );
+  }
+
   return <div>Cart</div>;
 };
 
