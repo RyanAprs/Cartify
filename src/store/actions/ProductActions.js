@@ -6,6 +6,7 @@ const BASE_URI = import.meta.env.VITE_BASE_URI;
 export const FETCH_PRODUCTS_REQUEST = "FETCH_PRODUCTS_REQUEST";
 export const FETCH_PRODUCTS_SUCCESS = "FETCH_PRODUCTS_SUCCESS";
 export const FETCH_PRODUCTS_ERROR = "FETCH_PRODUCTS_ERROR";
+export const UPDATE_PRODUCT_QUANTITY = "UPDATE_PRODUCT_QUANTITY";
 
 export const fetchProductsRequest = () => ({
   type: FETCH_PRODUCTS_REQUEST,
@@ -21,39 +22,10 @@ export const fetchProductsError = (error) => ({
   payload: error,
 });
 
-export const fetchProducts = () => async (dispatch) => {
-  dispatch(fetchProductsRequest());
-  try {
-    const response = await axios.get(`${BASE_URI}/products`);
-    const productWithDefaultQuantity = response.data.map((product) => ({
-      ...product,
-      quantity: 20,
-    }));
-    dispatch(fetchProductsSuccess(productWithDefaultQuantity));
-    console.log(productWithDefaultQuantity);
-  } catch (error) {
-    dispatch(fetchProductsError(error.message));
-  }
-};
-
-// GET PRODUCT BY CATEGORY
-export const fetchProductsByCategory = (category) => async (dispatch) => {
-  dispatch(fetchProductsRequest());
-  try {
-    const response = await axios.get(
-      `${BASE_URI}/products/category/${category}`
-    );
-
-    const productWithDefaultQuantity = response.data.map((product) => ({
-      ...product,
-      quantity: 20,
-    }));
-
-    dispatch(fetchProductsSuccess(productWithDefaultQuantity));
-  } catch (error) {
-    dispatch(fetchProductsError(error.message));
-  }
-};
+export const updateProductQuantity = (data) => ({
+  type: UPDATE_PRODUCT_QUANTITY,
+  payload: data,
+});
 
 // GET PRODUCT BY ID
 export const FETCH_PRODUCT_BY_ID_REQUEST = "FETCH_PRODUCT_BY_ID_REQUEST";
@@ -80,23 +52,79 @@ export const fetchProductByIdNotFound = (error) => ({
   payload: error,
 });
 
-export const fetchProductById = (id) => async (dispatch) => {
-  dispatch(fetchProductByIdRequest());
-  try {
-    const response = await axios.get(`${BASE_URI}/products/${id}`);
+// FETCH PRODUCTS
+export const fetchProducts = (id) => async (dispatch, getState) => {
+  if (id) {
+    dispatch(fetchProductByIdRequest());
+    try {
+      const response = await axios.get(`${BASE_URI}/products/${id}`);
 
-    const productWithDefaultQuantity = {
-      ...response.data,
-      quantity: 20,
-    };
+      // validasi apakah id product dan id pada redux sama
+      const currentProduct = getState().products.products.find(
+        (product) => product.id === response.data.id
+      );
 
-    if (response.data) {
-      dispatch(fetchProductByIdSuccess(productWithDefaultQuantity));
-      console.log(productWithDefaultQuantity);
-    } else {
-      dispatch(fetchProductByIdNotFound("Product not found"));
+      if (response.data) {
+        const updatedProduct = {
+          ...response.data,
+          quantity: currentProduct ? currentProduct.quantity : 20,
+        };
+        dispatch(fetchProductByIdSuccess(updatedProduct));
+      } else {
+        dispatch(fetchProductByIdNotFound("Product not found"));
+      }
+    } catch (error) {
+      dispatch(fetchProductByIdError(error.message));
     }
-  } catch (error) {
-    dispatch(fetchProductByIdError(error.message));
+  } else {
+    dispatch(fetchProductsRequest());
+    try {
+      const response = await axios.get(`${BASE_URI}/products`);
+
+      // Ambil state saat ini dari Redux
+      const currentProducts = getState().products.products;
+
+      // Update kuantitas hanya jika produk baru
+      const productsWithQuantity = response.data.map((product) => {
+        const existingProduct = currentProducts.find(
+          (p) => p.id === product.id
+        );
+        return existingProduct
+          ? { ...existingProduct }
+          : { ...product, quantity: 20 };
+      });
+
+      dispatch(fetchProductsSuccess(productsWithQuantity));
+    } catch (error) {
+      dispatch(fetchProductsError(error.message));
+    }
   }
 };
+
+// GET PRODUCT BY CATEGORY
+export const fetchProductsByCategory =
+  (category) => async (dispatch, getState) => {
+    dispatch(fetchProductsRequest());
+    try {
+      const response = await axios.get(
+        `${BASE_URI}/products/category/${category}`
+      );
+
+      // Ambil state saat ini dari Redux
+      const currentProducts = getState().products.products;
+
+      // Update kuantitas hanya jika produk baru
+      const productsWithQuantity = response.data.map((product) => {
+        const existingProduct = currentProducts.find(
+          (p) => p.id === product.id
+        );
+        return existingProduct
+          ? { ...existingProduct }
+          : { ...product, quantity: 20 };
+      });
+
+      dispatch(fetchProductsSuccess(productsWithQuantity));
+    } catch (error) {
+      dispatch(fetchProductsError(error.message));
+    }
+  };

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { fetchProductById } from "../store/actions/ProductActions";
+import { fetchProducts } from "../store/actions/ProductActions";
 import StarRating from "../components/StartRating";
 import { ChevronLeft } from "lucide-react";
 
@@ -9,13 +9,16 @@ const ProductDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const { singleProduct, loading, singleProductNotFound } = useSelector(
-    (state) => state.products
-  );
+  const { products, singleProduct, loading, singleProductNotFound } =
+    useSelector((state) => state.products);
 
   useEffect(() => {
-    dispatch(fetchProductById(id));
-  }, [dispatch, id]);
+    if (products.length === 0) {
+      dispatch(fetchProducts());
+    } else {
+      dispatch(fetchProducts(id));
+    }
+  }, [dispatch, id, products]);
 
   if (loading) {
     return (

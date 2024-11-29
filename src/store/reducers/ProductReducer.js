@@ -6,6 +6,7 @@ import {
   FETCH_PRODUCTS_ERROR,
   FETCH_PRODUCTS_REQUEST,
   FETCH_PRODUCTS_SUCCESS,
+  UPDATE_PRODUCT_QUANTITY,
 } from "../actions/ProductActions";
 
 const ProductState = {
@@ -61,6 +62,19 @@ export const ProductReducer = (state = ProductState, action) => {
         loading: false,
         singleProductNotFound: action.payload,
       };
+    case UPDATE_PRODUCT_QUANTITY: {
+      return {
+        ...state,
+        products: state.products.map((product) =>
+          product.id === action.payload.productId
+            ? {
+                ...product,
+                quantity: product.quantity - action.payload.quantity,
+              }
+            : product
+        ),
+      };
+    }
     default:
       return state;
   }

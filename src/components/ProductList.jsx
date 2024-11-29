@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import {
   fetchProducts,
   fetchProductsByCategory,
+  updateProductQuantity,
 } from "../store/actions/ProductActions";
 import { Link, useNavigate } from "react-router-dom";
 import StarRating from "../components/StartRating";
@@ -30,6 +31,10 @@ const ProductList = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  useEffect(() => {
+    console.log("Updated products:", products);
+  }, [products]);
+
   const handleAddToCart = (productId, quantity) => {
     if (!token) {
       navigate("/login");
@@ -40,28 +45,17 @@ const ProductList = () => {
       const day = String(date.getDate()).padStart(2, "0");
 
       const formattedDate = `${year}-${month}-${day}`;
-
       const userId = getIdUser(token);
+      const productDataToCart = {
+        productId,
+        quantity,
+      };
 
-      const products = [
-        {
-          productId,
-          quantity,
-        },
-      ];
+      // Tambahkan produk ke keranjang
+      dispatch(addToCart(userId, formattedDate, [productDataToCart]));
 
-      dispatch(addToCart(userId, formattedDate, products));
-
-      // console.log({
-      //   userId,
-      //   date: formattedDate,
-      //   products: [
-      //     {
-      //       productId,
-      //       quantity,
-      //     },
-      //   ],
-      // });
+      // Perbarui kuantitas di state Redux
+      dispatch(updateProductQuantity({ productId, quantity }));
     }
   };
 
@@ -74,7 +68,7 @@ const ProductList = () => {
   }
 
   return (
-    <div className="flex flex-col w-full pt-20 gap-8 min-h-screen max-h-fit bg-second-color">
+    <div className="flex flex-col w-full gap-8 min-h-screen max-h-fit bg-second-color">
       <div className="md:flex md:justify-between justify-end items-center">
         <h1 className="md:text-2xl text-xl font-bold">
           Exclusive Collections Just for You!
