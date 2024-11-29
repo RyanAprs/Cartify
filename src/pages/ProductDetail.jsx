@@ -1,24 +1,65 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { fetchProducts } from "../store/actions/ProductActions";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  fetchProducts,
+  updateProductQuantity,
+} from "../store/actions/ProductActions";
 import StarRating from "../components/StartRating";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Minus, Plus } from "lucide-react";
+import { checkToken, getIdUser } from "../store/actions/UserActions";
+import { addToCart } from "../store/actions/CartActions";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const token = checkToken();
+  const [quantity, setQuantity] = useState(1);
 
-  const { products, singleProduct, loading, singleProductNotFound } =
-    useSelector((state) => state.products);
+  const { singleProduct, loading, singleProductNotFound } = useSelector(
+    (state) => state.products
+  );
 
   useEffect(() => {
-    if (products.length === 0) {
-      dispatch(fetchProducts());
+    dispatch(fetchProducts(id));
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    console.log(singleProduct);
+  }, [singleProduct]);
+
+  const handleMinus = () => {
+    setQuantity(quantity - 1);
+  };
+
+  const handlePlus = () => {
+    setQuantity(quantity + 1);
+  };
+
+  const handleAddToCart = (productId) => {
+    if (!token) {
+      navigate("/login");
     } else {
-      dispatch(fetchProducts(id));
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      const formattedDate = `${year}-${month}-${day}`;
+      const userId = getIdUser(token);
+      const productDataToCart = {
+        productId,
+        quantity,
+      };
+
+      // Tambahkan produk ke keranjang
+      dispatch(addToCart(userId, formattedDate, [productDataToCart]));
+
+      // Perbarui kuantitas di state Redux
+      dispatch(updateProductQuantity({ productId, quantity }));
     }
-  }, [dispatch, id, products]);
+  };
 
   if (loading) {
     return (
@@ -61,7 +102,7 @@ const ProductDetail = () => {
               <h1 className="text-4xl font-semibold md:font-bold 2xl:text-8xl">
                 {singleProduct.title}
               </h1>
-              <div className="md:hidden flex justify-starts gap-2 items-center text-lg">
+              <div className=" flex justify-starts gap-2 items-center text-lg">
                 <StarRating rating={singleProduct.rating?.rate} />
                 <p>({singleProduct.rating?.count})</p>
               </div>
@@ -69,16 +110,30 @@ const ProductDetail = () => {
                 <p className="font-semibold">Product description</p>
                 <p className="text-justify">{singleProduct.description}</p>
               </div>
-              <div className="md:flex hidden justify-starts gap-2 items-center 2xl:text-xl">
-                <StarRating rating={singleProduct.rating?.rate} />
-                <p>({singleProduct.rating?.count})</p>
-              </div>
-              <h2 className="text-xl font-semibold md:flex hidden 2xl:text-4xl">
+              <h2 className="text-2xl font-semibold md:flex hidden 2xl:text-4xl">
                 ${singleProduct.price}
               </h2>
-              <button className="bg-third-color w-full md:w-1/2 py-3 2xl:py-5 2xl:text-2xl rounded-full text-main-color">
-                Add to Cart
-              </button>
+              <div className="flex items-center justify-start gap-4 text-lg">
+                <p>Stock:</p>
+                <p>{singleProduct.quantity}</p>
+              </div>
+              <div className="flex md:gap-5 gap-3 md:flex-row flex-col">
+                <div className="flex bg-main-color py-3 rounded-full justify-center gap-8 items-center w-full md:w-1/2 ">
+                  <button onClick={handleMinus} disabled={quantity === 1}>
+                    <Minus />
+                  </button>
+                  <h1 className="text-xl">{quantity}</h1>
+                  <button onClick={handlePlus}>
+                    <Plus />
+                  </button>
+                </div>
+                <button
+                  onClick={() => handleAddToCart(singleProduct.id)}
+                  className="bg-third-color w-full md:w-1/2 py-3 2xl:py-5 2xl:text-2xl rounded-full text-main-color"
+                >
+                  Add to Cart
+                </button>
+              </div>
             </div>
           </div>
         )}
