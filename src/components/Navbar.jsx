@@ -1,11 +1,20 @@
 import { Link } from "react-router-dom";
 import logo from "../assets/cartify.png";
 import { ShoppingCart, User, Menu, X, LogIn } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { checkToken } from "../store/actions/UserActions";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [itemCart, setItemCart] = useState();
+  const { carts } = useSelector((state) => state.carts);
+
+  useEffect(() => {
+    const getProducts = carts.map((item) => item.products);
+    const totalItemOnCart = getProducts[0]?.length;
+    setItemCart(totalItemOnCart);
+  }, [carts]);
 
   const token = checkToken();
 
@@ -32,9 +41,13 @@ const Navbar = () => {
 
       <div className="hidden md:flex justify-center items-center gap-6">
         {token && (
-          <Link to="/cart" className="flex justify-center items-center gap-1">
-            <ShoppingCart />
-            Cart
+          <Link to="/cart" className="flex relative">
+            <div className="flex justify-center items-center gap-1 relative">
+              <ShoppingCart />
+              <span className="absolute bottom-3 left-4 bg-third-color text-main-color text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                {itemCart}
+              </span>
+            </div>
           </Link>
         )}
 
@@ -44,7 +57,6 @@ const Navbar = () => {
             className="flex justify-center items-center gap-1"
           >
             <User />
-            Profile
           </Link>
         ) : (
           <Link to="/login" className="flex justify-center items-center gap-1">
@@ -56,8 +68,13 @@ const Navbar = () => {
 
       <div className="md:hidden flex items-center justify-center gap-4">
         {token ? (
-          <Link to="/cart" className="flex justify-center items-center gap-1">
-            <ShoppingCart />
+          <Link to="/cart" className="flex relative">
+            <div className="flex justify-center items-center gap-1 relative">
+              <ShoppingCart />
+              <span className="absolute bottom-3 left-4 bg-third-color text-main-color text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                {itemCart}
+              </span>
+            </div>
           </Link>
         ) : (
           <Link to="/login" className="flex justify-center items-center gap-1">

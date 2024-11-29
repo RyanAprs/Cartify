@@ -31,10 +31,6 @@ const ProductList = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log("Updated products:", products);
-  }, [products]);
-
   const handleAddToCart = (productId, quantity) => {
     if (!token) {
       navigate("/login");
