@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import {
   fetchProducts,
   fetchProductsByCategory,
-  updateProductQuantity,
 } from "../store/actions/ProductActions";
 import { Link, useNavigate } from "react-router-dom";
 import StarRating from "../components/StartRating";
@@ -49,9 +48,6 @@ const ProductList = () => {
 
       // Tambahkan produk ke keranjang
       dispatch(addToCart(userId, formattedDate, [productDataToCart]));
-
-      // Perbarui kuantitas di state Redux
-      dispatch(updateProductQuantity({ productId, quantity }));
     }
   };
 

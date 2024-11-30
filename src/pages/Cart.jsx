@@ -3,8 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkToken } from "../store/actions/UserActions";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { fetchProducts } from "../store/actions/ProductActions";
-import { Minus, Plus } from "lucide-react"; // Pastikan ikon Plus dan Minus diimport
+import {
+  fetchProducts,
+  updateProductQuantity,
+} from "../store/actions/ProductActions";
+import { Minus, Plus } from "lucide-react";
+import { updateCart } from "../store/actions/CartActions";
 
 const Cart = () => {
   const { carts, loading, error } = useSelector((state) => state.carts);
@@ -56,23 +60,39 @@ const Cart = () => {
         type === "increase"
           ? prevQuantities[productId] + 1
           : prevQuantities[productId] - 1;
-      return {
+
+      const updatedQuantities = {
         ...prevQuantities,
         [productId]: Math.max(newQuantity, 1),
       };
+
+      // Jika produk sudah dipilih, perbarui juga di selectedProducts
+      setSelectedProducts((prevSelected) => {
+        if (prevSelected[productId]) {
+          return {
+            ...prevSelected,
+            [productId]: { quantity: updatedQuantities[productId] },
+          };
+        }
+        return prevSelected;
+      });
+
+      return updatedQuantities;
     });
   };
 
-  const handleCheckboxChange = (productId, quantity) => {
+  const handleCheckboxChange = (productId) => {
     setSelectedProducts((prevSelected) => {
       const newSelected = { ...prevSelected };
 
       if (newSelected[productId]) {
-        // If product is already selected, remove it
+        // Hapus produk dari daftar jika sudah tidak dipilih
         delete newSelected[productId];
       } else {
-        // Add productId and quantity when selected
-        newSelected[productId] = { quantity };
+        // Tambahkan produk dengan quantity saat ini
+        newSelected[productId] = {
+          quantity: quantities[productId] || 1,
+        };
       }
 
       return newSelected;
@@ -91,11 +111,24 @@ const Cart = () => {
   };
 
   const handleCheckOut = () => {
-    for (const productId in selectedProducts) {
-      const product = selectedProducts[productId];
-      console.log("Product ID:", productId);
-      console.log("Quantity:", product.quantity);
-    }
+    const updatedCartProducts = carts[0].products.filter(
+      (item) => !selectedProducts[item.productId]
+    );
+
+    Object.entries(selectedProducts).forEach(([productId, productDetails]) => {
+      const quantity = productDetails.quantity;
+
+      dispatch(
+        updateProductQuantity({ productId: parseInt(productId), quantity })
+      );
+    });
+
+    const updatedCart = { ...carts[0], products: updatedCartProducts };
+    dispatch(updateCart(updatedCart));
+
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
   };
 
   if (loading) {
@@ -157,14 +190,19 @@ const Cart = () => {
                           )
                         }
                       />
-                      <div className="bg-main-color p-4">
-                        <img
-                          src={product.image}
-                          className="h-32 w-auto object-contain"
-                          alt=""
-                        />
-                      </div>
-                      <p className="w-60">{product.title}</p>{" "}
+                      <Link
+                        to={`/product/${product.id}`}
+                        className="flex items-center gap-4"
+                      >
+                        <div className="bg-main-color p-4">
+                          <img
+                            src={product.image}
+                            className="h-32 w-auto object-contain"
+                            alt={product.title}
+                          />
+                        </div>
+                        <p className="w-60">{product.title}</p>
+                      </Link>
                     </td>
                     <td className="text-center p-4">${product.price}</td>
                     <td className="text-center p-4">
@@ -189,7 +227,6 @@ const Cart = () => {
                     <td className="text-center p-4">
                       ${product.price * quantity}
                     </td>
-                    <td className="text-center p-4"></td>
                   </tr>
                 );
               })
@@ -216,7 +253,8 @@ const Cart = () => {
               quantities[product.id] || cartProduct?.quantity || 0;
 
             return (
-              <div
+              <Link
+                to={`/product/${product.id}`}
                 key={index}
                 className="flex flex-col w-full justify-center items-center"
               >
@@ -264,7 +302,7 @@ const Cart = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })
         ) : (

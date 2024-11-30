@@ -63,18 +63,21 @@ export const ProductReducer = (state = ProductState, action) => {
         singleProductNotFound: action.payload,
       };
     case UPDATE_PRODUCT_QUANTITY: {
+      const updatedProducts = state.products.map((product) =>
+        product.id === action.payload.productId
+          ? {
+              ...product,
+              quantity: product.quantity - action.payload.quantity,
+            }
+          : product
+      );
+
       return {
         ...state,
-        products: state.products.map((product) =>
-          product.id === action.payload.productId
-            ? {
-                ...product,
-                quantity: product.quantity - action.payload.quantity,
-              }
-            : product
-        ),
+        products: updatedProducts,
       };
     }
+
     default:
       return state;
   }

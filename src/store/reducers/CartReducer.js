@@ -2,6 +2,7 @@ import {
   ADD_TO_CART_ERROR,
   ADD_TO_CART_REQUEST,
   ADD_TO_CART_SUCCESS,
+  UPDATE_CART,
 } from "../actions/CartActions";
 
 const CartState = {
@@ -18,8 +19,8 @@ export const CartReducer = (state = CartState, action) => {
         loading: true,
         error: null,
       };
-    case ADD_TO_CART_SUCCESS: // validasi user id
-    {
+    case ADD_TO_CART_SUCCESS: {
+      // validasi user id
       const existingCart = state.carts.find(
         (cart) => cart.userId === action.payload.userId
       );
@@ -65,12 +66,16 @@ export const CartReducer = (state = CartState, action) => {
         };
       }
     }
-
     case ADD_TO_CART_ERROR:
       return {
         ...state,
         loading: false,
         error: action.payload,
+      };
+    case UPDATE_CART:
+      return {
+        ...state,
+        carts: [action.payload],
       };
     default:
       return state;

@@ -44,9 +44,11 @@ const Navbar = () => {
           <Link to="/cart" className="flex relative">
             <div className="flex justify-center items-center gap-1 relative">
               <ShoppingCart />
-              <span className="absolute bottom-3 left-4 bg-third-color text-main-color text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                {itemCart}
-              </span>
+              {itemCart > 0 && (
+                <span className="absolute bottom-3 left-4 bg-third-color text-main-color text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {itemCart}
+                </span>
+              )}
             </div>
           </Link>
         )}
@@ -70,9 +72,11 @@ const Navbar = () => {
           <Link to="/cart" className="flex relative">
             <div className="flex justify-center items-center gap-1 relative">
               <ShoppingCart />
-              <span className="absolute bottom-3 left-4 bg-third-color text-main-color text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                {itemCart}
-              </span>
+              {itemCart > 0 && (
+                <span className="absolute bottom-3 left-4 bg-third-color text-main-color text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {itemCart}
+                </span>
+              )}
             </div>
           </Link>
         ) : (

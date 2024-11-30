@@ -1,10 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  fetchProducts,
-  updateProductQuantity,
-} from "../store/actions/ProductActions";
+import { fetchProducts } from "../store/actions/ProductActions";
 import StarRating from "../components/StartRating";
 import { ChevronLeft, Minus, Plus } from "lucide-react";
 import { checkToken, getIdUser } from "../store/actions/UserActions";
@@ -21,8 +18,9 @@ const ProductDetail = () => {
     (state) => state.products
   );
 
-  useEffect(() => {}, [dispatch, id]);
-  dispatch(fetchProducts(id));
+  useEffect(() => {
+    dispatch(fetchProducts(id));
+  }, [dispatch, id]);
 
   const handleMinus = () => {
     setQuantity(quantity - 1);
@@ -50,9 +48,6 @@ const ProductDetail = () => {
 
       // Tambahkan produk ke keranjang
       dispatch(addToCart(userId, formattedDate, [productDataToCart]));
-
-      // Perbarui kuantitas di state Redux
-      dispatch(updateProductQuantity({ productId, quantity }));
     }
   };
 
