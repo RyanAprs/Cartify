@@ -5,6 +5,7 @@ import Cart from "../pages/Cart";
 import NotFound from "../pages/NotFound";
 import Navbar from "../components/Navbar";
 import Home from "../pages/home";
+import NavbarSecondary from "../components/NavbarSecondary";
 
 const AppRoute = () => {
   return (
@@ -29,7 +30,15 @@ const AppRoute = () => {
             </>
           }
         />
-        <Route path="/cart" element={<Cart />} />
+        <Route
+          path="/cart"
+          element={
+            <>
+              <NavbarSecondary />
+              <Cart />
+            </>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

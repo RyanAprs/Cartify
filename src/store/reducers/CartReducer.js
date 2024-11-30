@@ -18,8 +18,7 @@ export const CartReducer = (state = CartState, action) => {
         loading: true,
         error: null,
       };
-    case ADD_TO_CART_SUCCESS: 
-    // validasi user id
+    case ADD_TO_CART_SUCCESS: // validasi user id
     {
       const existingCart = state.carts.find(
         (cart) => cart.userId === action.payload.userId

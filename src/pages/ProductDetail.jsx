@@ -21,13 +21,8 @@ const ProductDetail = () => {
     (state) => state.products
   );
 
-  useEffect(() => {
-    dispatch(fetchProducts(id));
-  }, [dispatch, id]);
-
-  useEffect(() => {
-    console.log(singleProduct);
-  }, [singleProduct]);
+  useEffect(() => {}, [dispatch, id]);
+  dispatch(fetchProducts(id));
 
   const handleMinus = () => {
     setQuantity(quantity - 1);

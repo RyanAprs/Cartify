@@ -21,7 +21,7 @@ const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <div className="w-full h-20 flex fixed top-0 right-0 left-0 bg-second-color items-center justify-between px-4 md:px-10">
+    <div className="w-full h-20 flex fixed top-[-1px] right-0 left-0 bg-second-color items-center justify-between px-4 md:px-10">
       <Link to="/" className="flex items-center justify-start">
         <img src={logo} alt="cartify logo" className="h-16" />
         <h1 className="font-semibold text-3xl">Cartify</h1>
@@ -61,7 +61,6 @@ const Navbar = () => {
         ) : (
           <Link to="/login" className="flex justify-center items-center gap-1">
             <LogIn />
-            Login
           </Link>
         )}
       </div>

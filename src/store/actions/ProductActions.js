@@ -58,8 +58,6 @@ export const fetchProducts = (id) => async (dispatch, getState) => {
     dispatch(fetchProductByIdRequest());
     try {
       const response = await axios.get(`${BASE_URI}/products/${id}`);
-
-      // validasi apakah id product dan id pada redux sama
       const currentProduct = getState().products.products.find(
         (product) => product.id === response.data.id
       );
@@ -70,11 +68,14 @@ export const fetchProducts = (id) => async (dispatch, getState) => {
           quantity: currentProduct ? currentProduct.quantity : 20,
         };
         dispatch(fetchProductByIdSuccess(updatedProduct));
+        return updatedProduct;
       } else {
         dispatch(fetchProductByIdNotFound("Product not found"));
+        return null;
       }
     } catch (error) {
       dispatch(fetchProductByIdError(error.message));
+      throw error;
     }
   } else {
     dispatch(fetchProductsRequest());
