@@ -19,6 +19,10 @@ const Cart = () => {
   const [productsDetails, setProductsDetails] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [selectedProducts, setSelectedProducts] = useState({});
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showCheckoutError, setShowCheckoutError] = useState(false);
+  const [showCheckoutSucccess, setShowCheckoutSucccess] = useState(false);
+  const [productToRemove, setProductToRemove] = useState(null);
 
   useEffect(() => {
     const fetchProductsDetails = async () => {
@@ -56,17 +60,22 @@ const Cart = () => {
 
   const handleQuantityChange = (productId, type) => {
     setQuantities((prevQuantities) => {
-      const newQuantity =
+      let newQuantity =
         type === "increase"
           ? prevQuantities[productId] + 1
           : prevQuantities[productId] - 1;
+
+      if (newQuantity < 1) {
+        setProductToRemove(productId);
+        setShowConfirmModal(true);
+        newQuantity = 1;
+      }
 
       const updatedQuantities = {
         ...prevQuantities,
         [productId]: Math.max(newQuantity, 1),
       };
 
-      // Jika produk sudah dipilih, perbarui juga di selectedProducts
       setSelectedProducts((prevSelected) => {
         if (prevSelected[productId]) {
           return {
@@ -81,15 +90,28 @@ const Cart = () => {
     });
   };
 
+  const handleConfirmRemove = () => {
+    const updatedCartProducts = carts[0].products.filter(
+      (item) => item.productId !== productToRemove
+    );
+
+    const updatedCart = { ...carts[0], products: updatedCartProducts };
+    dispatch(updateCart(updatedCart));
+    setShowConfirmModal(false);
+    window.location.reload();
+  };
+
+  const handleCancelRemove = () => {
+    setShowConfirmModal(false);
+  };
+
   const handleCheckboxChange = (productId) => {
     setSelectedProducts((prevSelected) => {
       const newSelected = { ...prevSelected };
 
       if (newSelected[productId]) {
-        // Hapus produk dari daftar jika sudah tidak dipilih
         delete newSelected[productId];
       } else {
-        // Tambahkan produk dengan quantity saat ini
         newSelected[productId] = {
           quantity: quantities[productId] || 1,
         };
@@ -111,9 +133,24 @@ const Cart = () => {
   };
 
   const handleCheckOut = () => {
-    const updatedCartProducts = carts[0].products.filter(
-      (item) => !selectedProducts[item.productId]
-    );
+    let hasError = false;
+
+    Object.entries(selectedProducts).forEach(([productId, productDetails]) => {
+      if (hasError) return;
+
+      const product = productsDetails.find((p) => p.id === parseInt(productId));
+      const quantity = productDetails.quantity;
+
+      if (quantity > product.quantity) {
+        hasError = true;
+        setShowCheckoutError(true);
+        return;
+      }
+    });
+
+    if (hasError) {
+      return;
+    }
 
     Object.entries(selectedProducts).forEach(([productId, productDetails]) => {
       const quantity = productDetails.quantity;
@@ -121,14 +158,23 @@ const Cart = () => {
       dispatch(
         updateProductQuantity({ productId: parseInt(productId), quantity })
       );
+
+      const updatedCartProducts = carts[0].products.filter(
+        (item) => !selectedProducts[item.productId]
+      );
+
+      const updatedCart = { ...carts[0], products: updatedCartProducts };
+      dispatch(updateCart(updatedCart));
     });
 
-    const updatedCart = { ...carts[0], products: updatedCartProducts };
-    dispatch(updateCart(updatedCart));
+    setShowCheckoutSucccess(true);
+  };
 
+  const handleCloseSuccess = () => {
+    setShowCheckoutSucccess(false);
     setTimeout(() => {
       navigate("/");
-    }, 1000);
+    }, 500);
   };
 
   if (loading) {
@@ -170,7 +216,6 @@ const Cart = () => {
           <tbody>
             {productsDetails.length > 0 ? (
               productsDetails.map((product, index) => {
-                // Mencari quantity dari carts yang sesuai dengan productId
                 const cartProduct = carts[0].products.find(
                   (item) => item.productId === product.id
                 );
@@ -183,12 +228,7 @@ const Cart = () => {
                       <input
                         type="checkbox"
                         checked={selectedProducts[product.id] ? true : false}
-                        onChange={() =>
-                          handleCheckboxChange(
-                            product.id,
-                            quantities[product.id]
-                          )
-                        }
+                        onChange={() => handleCheckboxChange(product.id)}
                       />
                       <Link
                         to={`/product/${product.id}`}
@@ -201,12 +241,15 @@ const Cart = () => {
                             alt={product.title}
                           />
                         </div>
-                        <p className="w-60">{product.title}</p>
+                        <div className="w-60 flex flex-col gap-3">
+                          <p>{product.title}</p>
+                          <p>Stock: {product.quantity}</p>
+                        </div>
                       </Link>
                     </td>
                     <td className="text-center p-4">${product.price}</td>
                     <td className="text-center p-4">
-                      <div className="flex justify-center items-center gap-4 border-2 p-2">
+                      <div className="flex justify-center items-center gap-4 border-2 p-2 rounded-full">
                         <button
                           onClick={() =>
                             handleQuantityChange(product.id, "decrease")
@@ -253,31 +296,33 @@ const Cart = () => {
               quantities[product.id] || cartProduct?.quantity || 0;
 
             return (
-              <Link
-                to={`/product/${product.id}`}
+              <div
                 key={index}
                 className="flex flex-col w-full justify-center items-center"
               >
-                <div className="flex flex-col bg-main-color w-full">
-                  <div className="flex justify-start p-4 items-center gap-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts[product.id] ? true : false}
-                      onChange={() =>
-                        handleCheckboxChange(product.id, quantities[product.id])
-                      }
-                    />
+                <div className="flex  bg-main-color w-full  p-4 items-center ">
+                  <input
+                    type="checkbox"
+                    checked={selectedProducts[product.id] ? true : false}
+                    onChange={() =>
+                      handleCheckboxChange(product.id, quantities[product.id])
+                    }
+                  />
 
+                  <div className="flex justify-end items-center w-full gap-4">
                     <div className="bg-main-color p-4">
                       <img
                         src={product.image}
-                        className="h-32  w-auto object-contain"
+                        className="sm:h-32 h-20 w-auto object-contain"
                         alt={product.title}
                       />
                     </div>
                     <div className="w-1/2 flex flex-col gap-2">
-                      <div className="text-lg">{product.title}</div>
-                      <div className="text-lg font-semibold">
+                      <div className="sm:text-lg text-sm">{product.title}</div>
+                      <div className="sm:text-lg text-sm">
+                        Stock: {product.quantity}
+                      </div>
+                      <div className="sm:text-lg text-sm font-semibold">
                         ${product.price}
                       </div>
                       <div className="w-full flex justify-end">
@@ -302,7 +347,7 @@ const Cart = () => {
                     </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             );
           })
         ) : (
@@ -313,9 +358,70 @@ const Cart = () => {
           </div>
         )}
       </div>
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold">Are you sure?</h2>
+            <p className="my-4">
+              You are about to remove this product from your cart.
+            </p>
+            <div className="flex gap-4 justify-end items-center">
+              <button
+                onClick={handleConfirmRemove}
+                className="bg-red-600 text-white px-4 py-2 rounded-md"
+              >
+                Yes
+              </button>
+              <button
+                onClick={handleCancelRemove}
+                className="bg-gray-300 text-black px-4 py-2 rounded-md"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCheckoutSucccess && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col gap-4">
+            <h2 className="text-xl font-semibold">
+              Product checked out successfully!!
+            </h2>
+            <div className="flex gap-4 justify-end items-center">
+              <button
+                onClick={handleCloseSuccess}
+                className="bg-gray-300 text-black px-4 py-2 rounded-md"
+              >
+                Okay
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCheckoutError && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold">
+              product orders, exceeding available stock!
+            </h2>
+            <p className="my-4">please recheck the product stock</p>
+            <div className="flex gap-4 justify-end items-center">
+              <button
+                onClick={() => setShowCheckoutError(false)}
+                className="bg-gray-300 text-black px-4 py-2 rounded-md"
+              >
+                Okay
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col md:static fixed bottom-0 right-3 left-1 w-full bg-second-color">
-        <div className="md:mt-6  p-4 flex justify-between">
+        <div className="md:mt-6 p-4 flex justify-between">
           <h2 className="text-xl font-semibold">Total Price</h2>
           <p className="text-xl font-semibold">${calculateTotal()}</p>
         </div>
@@ -323,7 +429,7 @@ const Cart = () => {
           <button
             onClick={() => handleCheckOut()}
             disabled={Object.keys(selectedProducts).length === 0}
-            className="bg-third-color w-full md:w-1/4 py-3 text-main-color font-semibold rounded-full"
+            className="bg-third-color w-full md:w-1/4 py-3 text-main-color font-semibold rounded-full cursor-pointer"
           >
             Check Out
           </button>

@@ -47,14 +47,54 @@ export const loginUser = (username, password) => async (dispatch) => {
   }
 };
 
+export const FETCH_USER_BY_ID_REQUEST = "FETCH_USER_BY_ID_REQUEST";
+export const FETCH_USER_BY_ID_SUCCESS = "FETCH_USER_BY_ID_SUCCESS";
+export const FETCH_USER_BY_ID_ERROR = "FETCH_USER_BY_ID_ERROR";
+
+export const fetchUserByIdRequest = () => ({
+  type: FETCH_USER_BY_ID_REQUEST,
+});
+
+export const fetchUserByIdSuccess = (user) => ({
+  type: FETCH_USER_BY_ID_SUCCESS,
+  payload: user,
+});
+
+export const fetchUserByIdError = (error) => ({
+  type: FETCH_USER_BY_ID_ERROR,
+  payload: error,
+});
+
+export const fetchUserById = (id) => async (dispatch) => {
+  dispatch(fetchUserByIdRequest());
+  try {
+    if (id) {
+      const response = await axios.get(`${BASE_URI}/users/${id}`);
+
+      dispatch(fetchUserByIdSuccess(response.data));
+      return response.data;
+    }
+  } catch (error) {
+    dispatch(fetchUserByIdError(error.message));
+    throw error;
+  }
+};
+
 export const checkToken = () => {
   const token = localStorage.getItem("token");
   return token ? token : null;
 };
 
 export const getIdUser = (token) => {
-  const decoded = jwtDecode(token);
-  const id = decoded.sub;
+  if (token) {
+    const decoded = jwtDecode(token);
+    const id = decoded.sub;
 
-  return id;
+    return id;
+  }
+};
+
+export const userLogout = () => {
+  window.location.href = "/login";
+  localStorage.removeItem("token");
 };

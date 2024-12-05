@@ -96,6 +96,10 @@ const ProductDetail = () => {
                 <StarRating rating={singleProduct.rating?.rate} />
                 <p>({singleProduct.rating?.count})</p>
               </div>
+              <div className="flex items-center justify-start gap-4 text-lg">
+                <p>Stock:</p>
+                <p>{singleProduct.quantity}</p>
+              </div>
               <div className="flex flex-col 2xl:text-3xl text-xl">
                 <p className="font-semibold">Product description</p>
                 <p className="text-justify">{singleProduct.description}</p>
@@ -103,10 +107,7 @@ const ProductDetail = () => {
               <h2 className="text-2xl font-semibold md:flex hidden 2xl:text-4xl">
                 ${singleProduct.price}
               </h2>
-              <div className="flex items-center justify-start gap-4 text-lg">
-                <p>Stock:</p>
-                <p>{singleProduct.quantity}</p>
-              </div>
+
               <div className="flex md:gap-5 gap-3 md:flex-row flex-col">
                 <div className="flex bg-main-color py-3 rounded-full justify-center gap-8 items-center w-full md:w-1/2 ">
                   <button onClick={handleMinus} disabled={quantity === 1}>

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   fetchProducts,
   fetchProductsByCategory,
@@ -9,6 +9,29 @@ import StarRating from "../components/StartRating";
 import { checkToken, getIdUser } from "../store/actions/UserActions";
 import { addToCart } from "../store/actions/CartActions";
 
+const categories = [
+  {
+    value: "all categories",
+    txt: "All Categories",
+  },
+  {
+    value: "electronics",
+    txt: "Electronics",
+  },
+  {
+    value: "jewelery",
+    txt: "Jewelery",
+  },
+  {
+    value: "men's clothing",
+    txt: "Men's Clothing",
+  },
+  {
+    value: "women's clothing",
+    txt: "Women's Clothing",
+  },
+];
+
 const ProductList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,13 +39,16 @@ const ProductList = () => {
   const { products, loading, error } = useSelector((state) => state.products);
   const token = checkToken();
 
-  const handleClickCategory = (e) => {
-    const selectedCategory = e.target.value;
+  const [selectedCategory, setSelectedCategory] = useState("all categories");
 
-    if (selectedCategory === "all categories") {
+  const handleClickCategory = (e) => {
+    const category = e.target.value;
+    setSelectedCategory(category);
+
+    if (category === "all categories") {
       dispatch(fetchProducts());
     } else {
-      dispatch(fetchProductsByCategory(selectedCategory));
+      dispatch(fetchProductsByCategory(category));
     }
   };
 
@@ -46,7 +72,6 @@ const ProductList = () => {
         quantity,
       };
 
-      // Tambahkan produk ke keranjang
       dispatch(addToCart(userId, formattedDate, [productDataToCart]));
     }
   };
@@ -66,14 +91,15 @@ const ProductList = () => {
           Exclusive Collections Just for You!
         </h1>
         <select
+          value={selectedCategory}
           onChange={handleClickCategory}
           className="bg-main-color p-3 w-full md:w-auto rounded-full"
         >
-          <option value="all categories">All Categories</option>
-          <option value="electronics">Electronics</option>
-          <option value="jewelery">Jewelery</option>
-          <option value="men's clothing">Men's Clothing</option>
-          <option value="women's clothing">Women's Clothing</option>
+          {categories.map((ct, id) => (
+            <option key={id} value={ct.value}>
+              {ct.txt}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -83,7 +109,7 @@ const ProductList = () => {
             Error: {error}
           </p>
         )}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 sm:gap-6 gap-2">
           {products.map((product) => (
             <div
               key={product.id}
@@ -95,27 +121,29 @@ const ProductList = () => {
               >
                 <div className="flex justify-center items-center mb-4">
                   <img
-                    className="h-40 w-auto object-contain"
+                    className="sm:h-40 h-20 w-auto object-contain"
                     src={product.image}
                     alt={product.title}
                   />
                 </div>
                 <div className="flex flex-col gap-2 flex-grow mb-4">
-                  <h1 className="text-lg font-bold line-clamp-2">
+                  <h1 className="sm:text-lg text-sm font-bold line-clamp-2">
                     {product.title}
                   </h1>
-                  <p className="text-lg font-semibold">${product.price}</p>
+                  <p className="sm:text-lg text-sm font-semibold">
+                    ${product.price}
+                  </p>
                 </div>
                 <div className="flex flex-col w-full items-end gap-2">
                   <div className="flex text-md w-full justify-start items-center gap-1">
                     <StarRating rating={product.rating.rate} />
-                    <p>{`(${product.rating.count})`}</p>
+                    <p className="sm:text-lg text-sm sm:font-normal font-light">{`(${product.rating.count})`}</p>
                   </div>
                 </div>
               </Link>
               <button
                 onClick={() => handleAddToCart(product.id, 1)}
-                className="bg-third-color w-full py-2 font-semibold rounded-full text-main-color mt-4 md:w-1/2 2xl:w-1/4"
+                className="bg-third-color w-full sm:py-2 py-1 sm:font-semibold sm:text-xl text-sm rounded-full text-main-color mt-4 md:w-1/2 2xl:w-1/4"
               >
                 Add to Cart
               </button>
