@@ -2,20 +2,31 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { checkToken, loginUser } from "../store/actions/UserActions";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const BASE_URI = import.meta.env.VITE_BASE_URI;
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.user);
+
+  const fetchData = async () => {
+    const res = await axios.get(`${BASE_URI}/users`);
+    setUsers(res.data);
+  };
 
   useEffect(() => {
     const token = checkToken();
     if (token) {
       navigate("/");
     }
+
+    fetchData();
   }, [navigate]);
 
   const handleLogin = (e) => {
@@ -23,8 +34,15 @@ const Login = () => {
     dispatch(loginUser(username, password));
   };
 
+  const handleChange = (event) => {
+    const value = event.target.value;
+    const [username, password] = value.split("|");
+    setUsername(username);
+    setPassword(password);
+  };
+
   return (
-    <div className="min-h-screen max-h-fit flex flex-col justify-center gap-10 2xl:gap-16">
+    <div className="min-h-screen max-h-fit flex flex-col justify-center items-center gap-10 2xl:gap-16">
       <div className="flex justify-center">
         <h1 className="text-5xl 2xl:text-7xl text-third-color font-semibold">
           Sign In
@@ -52,6 +70,20 @@ const Login = () => {
         >
           {loading ? "Loading.." : "Login"}
         </button>
+      </div>
+
+      <div className="flex flex-col gap-4 md:w-1/2 w-full ">
+        <p>Choose one of the users below to log in:</p>
+        <select
+          onChange={handleChange}
+          className="bg-main-color p-3 w-full md:w-auto rounded-full"
+        >
+          {users.map((user, id) => (
+            <option key={id} value={`${user.username}|${user.password}`}>
+              {user.username}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   );
