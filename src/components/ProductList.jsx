@@ -143,7 +143,7 @@ const ProductList = () => {
               </Link>
               <button
                 onClick={() => handleAddToCart(product.id, 1)}
-                className="bg-third-color w-full sm:py-2 py-1 sm:font-semibold sm:text-xl text-sm rounded-full text-main-color mt-4 md:w-1/2 2xl:w-1/4"
+                className="bg-third-color w-full sm:py-3 py-2 text-sm rounded-full text-main-color mt-4 md:w-1/2 2xl:w-1/4"
               >
                 Add to Cart
               </button>
