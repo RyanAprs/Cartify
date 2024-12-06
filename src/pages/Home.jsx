@@ -48,6 +48,7 @@ const Home = () => {
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
+
   return (
     <div className="flex flex-col w-full pt-20 gap-5 min-h-screen max-h-fit bg-second-color">
       <HeroSection />

@@ -4,8 +4,8 @@ import ProductDetail from "../pages/ProductDetail";
 import Cart from "../pages/Cart";
 import NotFound from "../pages/NotFound";
 import Navbar from "../components/Navbar";
-import Home from "../pages/home";
 import NavbarSecondary from "../components/NavbarSecondary";
+import Home from "../pages/Home";
 
 const AppRoute = () => {
   return (
