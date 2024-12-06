@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { checkToken } from "../store/actions/UserActions";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import {
   fetchProducts,
   updateProductQuantity,
@@ -195,9 +195,10 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen flex flex-col max-h-fit bg-second-color 2xl:gap-10 gap-6 pt-20">
-      <div className="flex items-center justify-start gap-4 ">
-        <Link to="/" className="flex justify-center items-center gap-4  p-1">
-          <ArrowLeft size={30} />
+      <div className="flex items-center justify-between gap-4 md:w-1/2 w-full">
+        <Link to="/" className="flex justify-center items-center gap-1  p-1">
+          <ChevronLeft size={20} />
+          <h1 className="text-xl">Back</h1>
         </Link>
         <h1 className=" text-3xl font-semibold">My Cart</h1>
       </div>

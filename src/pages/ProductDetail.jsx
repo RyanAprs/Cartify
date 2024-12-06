@@ -13,6 +13,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const token = checkToken();
   const [quantity, setQuantity] = useState(1);
+  const [showAddToCartError, setShowAddToCartError] = useState("");
 
   const { singleProduct, loading, singleProductNotFound } = useSelector(
     (state) => state.products
@@ -33,6 +34,8 @@ const ProductDetail = () => {
   const handleAddToCart = (productId) => {
     if (!token) {
       navigate("/login");
+    } else if (quantity > singleProduct.quantity) {
+      setShowAddToCartError(true);
     } else {
       const date = new Date();
       const year = date.getFullYear();
@@ -89,7 +92,7 @@ const ProductDetail = () => {
               <h2 className="text-xl font-bold md:hidden flex">
                 ${singleProduct.price}
               </h2>
-              <h1 className="text-4xl font-semibold md:font-bold 2xl:text-8xl">
+              <h1 className="text-2xl font-semibold md:font-bold 2xl:text-8xl">
                 {singleProduct.title}
               </h1>
               <div className=" flex justify-starts gap-2 items-center text-lg">
@@ -100,7 +103,7 @@ const ProductDetail = () => {
                 <p>Stock:</p>
                 <p>{singleProduct.quantity}</p>
               </div>
-              <div className="flex flex-col 2xl:text-3xl text-xl">
+              <div className="flex flex-col 2xl:text-3xl text-lg">
                 <p className="font-semibold">Product description</p>
                 <p className="text-justify">{singleProduct.description}</p>
               </div>
@@ -123,6 +126,25 @@ const ProductDetail = () => {
                   className="bg-third-color w-full md:w-1/2 py-3 2xl:py-5 2xl:text-2xl rounded-full text-main-color"
                 >
                   Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showAddToCartError && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="text-xl font-semibold">
+                product orders, exceeding available stock!
+              </h2>
+              <p className="my-4">please recheck the product stock</p>
+              <div className="flex gap-4 justify-end items-center">
+                <button
+                  onClick={() => setShowAddToCartError(false)}
+                  className="bg-gray-300 text-black px-4 py-2 rounded-md"
+                >
+                  Okay
                 </button>
               </div>
             </div>
