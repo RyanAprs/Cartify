@@ -376,10 +376,6 @@ const Cart = () => {
               </div>
             );
           })}
-
-        {carts.filter((cart) => cart.userId === id).length === 0 && (
-          <div className="text-center p-4">You haven't selected an item</div>
-        )}
       </div>
 
       {showConfirmModal && (
