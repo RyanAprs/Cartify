@@ -214,7 +214,7 @@ const Cart = () => {
       </div>
 
       {/* Cart list for desktop */}
-      <div className="overflow-x-auto md:flex hidden">
+      <div className="overflow-x-auto md:flex hidden flex-col">
         <table className="min-w-full border-separate border-spacing-0">
           <thead>
             <tr className="border-b">
@@ -292,10 +292,12 @@ const Cart = () => {
               })}
           </tbody>
         </table>
+        <div>
+          {carts.filter((cart) => cart.userId === id).length === 0 && (
+            <div className="text-center p-4">You haven't selected an item</div>
+          )}
+        </div>
       </div>
-      {carts.filter((cart) => cart.userId === id).length === 0 && (
-        <div className="text-center p-4">You haven't selected an item</div>
-      )}
 
       {/* Cart list for mobile */}
       <div className="flex flex-col md:hidden pb-32 justify-center items-center">
@@ -376,6 +378,10 @@ const Cart = () => {
               </div>
             );
           })}
+
+        {carts.filter((cart) => cart.userId === id).length === 0 && (
+          <div className="text-center p-4">You haven't selected an item</div>
+        )}
       </div>
 
       {showConfirmModal && (
