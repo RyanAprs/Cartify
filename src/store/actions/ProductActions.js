@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URI = import.meta.env.VITE_BASE_URI;
+const BASE_URI = "https://fakestoreapi.com";
 
 // GET ALL PRODUCTS
 export const FETCH_PRODUCTS_REQUEST = "FETCH_PRODUCTS_REQUEST";

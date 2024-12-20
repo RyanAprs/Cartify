@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URI = import.meta.env.VITE_BASE_URI;
+const BASE_URI = "https://fakestoreapi.com";
 
 // ADD TO CART
 export const ADD_TO_CART_REQUEST = "ADD_TO_CART_REQUEST";

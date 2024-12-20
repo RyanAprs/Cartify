@@ -4,7 +4,7 @@ import { checkToken, loginUser } from "../store/actions/UserActions";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const BASE_URI = import.meta.env.VITE_BASE_URI;
+const BASE_URI = "https://fakestoreapi.com";
 
 const Login = () => {
   const [username, setUsername] = useState("");

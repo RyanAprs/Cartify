@@ -11,7 +11,7 @@ import { Minus, Plus } from "lucide-react";
 import { updateCart } from "../store/actions/CartActions";
 
 const Cart = () => {
-  const { carts, loading, error } = useSelector((state) => state.carts);
+  const { carts, error } = useSelector((state) => state.carts);
   const dispatch = useDispatch();
   const token = checkToken();
   const navigate = useNavigate();
@@ -24,9 +24,11 @@ const Cart = () => {
   const [showCheckoutError, setShowCheckoutError] = useState(false);
   const [showCheckoutSucccess, setShowCheckoutSucccess] = useState(false);
   const [productToRemove, setProductToRemove] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProductsDetails = async () => {
+      setLoading(true);
       try {
         const userCart = carts.find((cart) => cart.userId === id);
 
@@ -49,6 +51,7 @@ const Cart = () => {
           });
 
           setQuantities(initialQuantities);
+          setLoading(false);
         } else {
           console.log("No products found for the user.");
           setProductsDetails([]);
