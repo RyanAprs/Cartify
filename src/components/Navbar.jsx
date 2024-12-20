@@ -18,18 +18,22 @@ const Navbar = () => {
   const [profile, setProfile] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
 
-  useEffect(() => {
-    const getProducts = carts.map((item) => item.products);
-    const totalItemOnCart = getProducts[0]?.length;
-    setItemCart(totalItemOnCart);
-  }, [carts]);
-
   const token = checkToken();
   let id;
 
   if (token) {
     id = getIdUser(token);
   }
+
+  useEffect(() => {
+    if (id) {
+      const userCart = carts.find((cart) => cart.userId === id);
+
+      const totalItemOnCart = userCart?.products?.length || 0;
+
+      setItemCart(totalItemOnCart);
+    }
+  }, [carts, id]);
 
   const fetchData = async () => {
     try {

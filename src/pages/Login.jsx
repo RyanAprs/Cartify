@@ -78,6 +78,9 @@ const Login = () => {
           onChange={handleChange}
           className="bg-main-color p-3 w-full md:w-auto rounded-full"
         >
+          <option value="" selected>
+            Select user
+          </option>
           {users.map((user, id) => (
             <option key={id} value={`${user.username}|${user.password}`}>
               {user.username}

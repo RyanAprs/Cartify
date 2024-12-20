@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { checkToken } from "../store/actions/UserActions";
+import { checkToken, getIdUser } from "../store/actions/UserActions";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import {
@@ -15,6 +15,7 @@ const Cart = () => {
   const dispatch = useDispatch();
   const token = checkToken();
   const navigate = useNavigate();
+  const id = getIdUser(token);
 
   const [productsDetails, setProductsDetails] = useState([]);
   const [quantities, setQuantities] = useState({});
@@ -26,9 +27,11 @@ const Cart = () => {
 
   useEffect(() => {
     const fetchProductsDetails = async () => {
-      if (carts?.[0]?.products?.length) {
-        try {
-          const products = carts[0].products;
+      try {
+        const userCart = carts.find((cart) => cart.userId === id);
+
+        if (userCart && userCart.products?.length > 0) {
+          const products = userCart.products;
           let arr = [];
 
           await Promise.all(
@@ -37,20 +40,27 @@ const Cart = () => {
               arr.push(response);
             })
           );
+
           setProductsDetails(arr);
+
           let initialQuantities = {};
-          carts[0].products.forEach((item) => {
+          userCart.products.forEach((item) => {
             initialQuantities[item.productId] = item.quantity;
           });
+
           setQuantities(initialQuantities);
-        } catch (err) {
-          console.error("Error fetching product details:", err);
+        } else {
+          console.log("No products found for the user.");
+          setProductsDetails([]);
+          setQuantities({});
         }
+      } catch (err) {
+        console.error("Error fetching product details:", err);
       }
     };
 
     fetchProductsDetails();
-  }, [carts, dispatch]);
+  }, [carts, dispatch, id]);
 
   useEffect(() => {
     if (!token) {
@@ -215,45 +225,51 @@ const Cart = () => {
             </tr>
           </thead>
           <tbody>
-            {productsDetails.length > 0 ? (
-              productsDetails.map((product, index) => {
-                const cartProduct = carts[0].products.find(
-                  (item) => item.productId === product.id
+            {carts
+              .filter((cart) => cart.userId === id)
+              .flatMap((cart) => cart.products)
+              .map((product, index) => {
+                const productDetails = productsDetails.find(
+                  (details) => details.id === product.productId
                 );
                 const quantity =
-                  quantities[product.id] || cartProduct?.quantity || 0;
+                  quantities[product.productId] || product.quantity;
 
                 return (
                   <tr key={index} className="border-b">
                     <td className="flex justify-start p-4 items-center gap-4">
                       <input
                         type="checkbox"
-                        checked={selectedProducts[product.id] ? true : false}
-                        onChange={() => handleCheckboxChange(product.id)}
+                        checked={
+                          selectedProducts[product.productId] ? true : false
+                        }
+                        onChange={() => handleCheckboxChange(product.productId)}
                       />
                       <Link
-                        to={`/product/${product.id}`}
+                        to={`/product/${product.productId}`}
                         className="flex items-center gap-4"
                       >
                         <div className="bg-main-color p-4">
                           <img
-                            src={product.image}
+                            src={productDetails?.image}
                             className="h-32 w-auto object-contain"
-                            alt={product.title}
+                            alt={productDetails?.title}
                           />
                         </div>
                         <div className="w-60 flex flex-col gap-3">
-                          <p>{product.title}</p>
-                          <p>Stock: {product.quantity}</p>
+                          <p>{productDetails?.title}</p>
+                          <p>Stock: {productDetails?.quantity || 0}</p>
                         </div>
                       </Link>
                     </td>
-                    <td className="text-center p-4">${product.price}</td>
+                    <td className="text-center p-4">
+                      ${productDetails?.price}
+                    </td>
                     <td className="text-center p-4">
                       <div className="flex justify-center items-center gap-4 border-2 p-2 rounded-full">
                         <button
                           onClick={() =>
-                            handleQuantityChange(product.id, "decrease")
+                            handleQuantityChange(product.productId, "decrease")
                           }
                         >
                           <Minus />
@@ -261,7 +277,7 @@ const Cart = () => {
                         <div>{quantity}</div>
                         <button
                           onClick={() =>
-                            handleQuantityChange(product.id, "increase")
+                            handleQuantityChange(product.productId, "increase")
                           }
                         >
                           <Plus />
@@ -269,44 +285,47 @@ const Cart = () => {
                       </div>
                     </td>
                     <td className="text-center p-4">
-                      ${product.price * quantity}
+                      ${(productDetails?.price || 0) * quantity}
                     </td>
                   </tr>
                 );
-              })
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center p-4">
-                  You haven't selected an item
-                </td>
-              </tr>
-            )}
+              })}
           </tbody>
         </table>
       </div>
+      {carts.filter((cart) => cart.userId === id).length === 0 && (
+        <div className="text-center p-4">You haven't selected an item</div>
+      )}
 
       {/* Cart list for mobile */}
       <div className="flex flex-col md:hidden pb-32 justify-center items-center">
-        {productsDetails.length > 0 ? (
-          productsDetails.map((product, index) => {
-            // Mencari quantity dari carts yang sesuai dengan productId
-            const cartProduct = carts[0].products.find(
-              (item) => item.productId === product.id
+        {carts
+          .filter((cart) => cart.userId === id)
+          .flatMap((cart) => cart.products)
+          .map((cartProduct, index) => {
+            const product = productsDetails.find(
+              (detail) => detail.id === cartProduct.productId
             );
             const quantity =
-              quantities[product.id] || cartProduct?.quantity || 0;
+              quantities[cartProduct.productId] || cartProduct.quantity;
+
+            if (!product) {
+              return null;
+            }
 
             return (
               <div
                 key={index}
                 className="flex flex-col w-full justify-center items-center"
               >
-                <div className="flex  bg-main-color w-full  p-4 items-center ">
+                <div className="flex bg-main-color w-full p-4 items-center">
                   <input
                     type="checkbox"
-                    checked={selectedProducts[product.id] ? true : false}
+                    checked={
+                      selectedProducts[cartProduct.productId] ? true : false
+                    }
                     onChange={() =>
-                      handleCheckboxChange(product.id, quantities[product.id])
+                      handleCheckboxChange(cartProduct.productId, quantity)
                     }
                   />
 
@@ -330,7 +349,10 @@ const Cart = () => {
                         <div className="flex justify-center items-center gap-4 border-2 p-1 rounded-full">
                           <button
                             onClick={() =>
-                              handleQuantityChange(product.id, "decrease")
+                              handleQuantityChange(
+                                cartProduct.productId,
+                                "decrease"
+                              )
                             }
                           >
                             <Minus />
@@ -338,7 +360,10 @@ const Cart = () => {
                           <div>{quantity}</div>
                           <button
                             onClick={() =>
-                              handleQuantityChange(product.id, "increase")
+                              handleQuantityChange(
+                                cartProduct.productId,
+                                "increase"
+                              )
                             }
                           >
                             <Plus />
@@ -350,15 +375,13 @@ const Cart = () => {
                 </div>
               </div>
             );
-          })
-        ) : (
-          <div>
-            <div colSpan="4" className="text-center p-4">
-              You haven't selected an item
-            </div>
-          </div>
+          })}
+
+        {carts.filter((cart) => cart.userId === id).length === 0 && (
+          <div className="text-center p-4">You haven't selected an item</div>
         )}
       </div>
+
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg">

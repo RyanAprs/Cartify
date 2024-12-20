@@ -2,11 +2,15 @@ import {
   ADD_TO_CART_ERROR,
   ADD_TO_CART_REQUEST,
   ADD_TO_CART_SUCCESS,
+  FETCH_CART_BY_ID_ERROR,
+  FETCH_CART_BY_ID_REQUEST,
+  FETCH_CART_BY_ID_SUCCESS,
   UPDATE_CART,
 } from "../actions/CartActions";
 
 const CartState = {
   carts: [],
+  cart: [],
   loading: false,
   error: null,
 };
@@ -76,6 +80,24 @@ export const CartReducer = (state = CartState, action) => {
       return {
         ...state,
         carts: [action.payload],
+      };
+    case FETCH_CART_BY_ID_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+    case FETCH_CART_BY_ID_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        carts: action.payload,
+      };
+    case FETCH_CART_BY_ID_ERROR:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
       };
     default:
       return state;
